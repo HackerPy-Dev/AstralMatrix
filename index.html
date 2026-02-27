@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Матрица Судьбы & Натальная Карта</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<header>
+  <div class="hdr-orn">✦ Сакральная нумерология и астрология ✦</div>
+  <h1>Матрица Судьбы<br>&amp; Натальная Карта</h1>
+  <p class="subtitle">Полная расшифровка кода вашей жизни через числа и звёзды</p>
+</header>
+
+<div class="wrap">
+  <div class="divider"><span>✦</span></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('matrix')">🔮 Матрица Судьбы</button>
+    <button class="tab-btn" onclick="switchTab('natal')">⭐ Натальная Карта</button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       МАТРИЦА СУДЬБЫ
+  ════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-matrix">
+    <div class="form-card">
+      <div class="form-title">✦ Введите дату рождения ✦</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="m-date">Дата рождения</label>
+          <input type="date" id="m-date" value="1990-06-15">
+        </div>
+        <div class="form-group">
+          <label for="m-name">Имя (необязательно)</label>
+          <input type="text" id="m-name" placeholder="Ваше имя">
+        </div>
+      </div>
+      <div id="m-err" class="err-msg">Пожалуйста, введите дату рождения</div>
+      <button class="calc-btn" onclick="calcMatrix()">Рассчитать матрицу</button>
+    </div>
+
+    <div class="result-sec" id="m-result">
+      <div class="sec-hdr">
+        <h2>Матрица Судьбы</h2>
+        <p id="m-subtitle">Нумерологическая карта вашего воплощения</p>
+      </div>
+      <div id="m-personal" class="personal-data"></div>
+      <div class="canvas-wrap">
+        <canvas id="matrixCanvas" width="520" height="520"></canvas>
+      </div>
+      <div class="block-tabs" id="m-tabs"></div>
+      <div id="m-block-zones"     class="block-content bvis"></div>
+      <div id="m-block-destiny"   class="block-content"></div>
+      <div id="m-block-karma"     class="block-content"></div>
+      <div id="m-block-relations" class="block-content"></div>
+      <div id="m-block-finance"   class="block-content"></div>
+      <div id="m-block-health"    class="block-content"></div>
+      <div id="m-block-year"      class="block-content"></div>
+      <div id="m-block-summary"   class="block-content"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       НАТАЛЬНАЯ КАРТА
+  ════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-natal">
+    <div class="form-card">
+      <div class="form-title">✦ Данные для натальной карты ✦</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="n-date">Дата рождения</label>
+          <input type="date" id="n-date" value="1990-06-15">
+        </div>
+        <div class="form-group">
+          <label for="n-time">Приблизительное время</label>
+          <select id="n-time">
+            <option value="12" selected>Не знаю (~полдень)</option>
+            <option value="6">Утро (~6:00)</option>
+            <option value="9">Утро (~9:00)</option>
+            <option value="12">День (~12:00)</option>
+            <option value="15">День (~15:00)</option>
+            <option value="18">Вечер (~18:00)</option>
+            <option value="21">Вечер (~21:00)</option>
+            <option value="0.5">Ночь (~0:00)</option>
+            <option value="3">Ночь (~3:00)</option>
+          </select>
+        </div>
+        <div class="form-group wide">
+          <label for="n-city">Город рождения</label>
+          <input type="text" id="n-city" placeholder="Начните вводить…"
+                 autocomplete="off"
+                 oninput="filterCities()"
+                 onfocus="filterCities()"
+                 onblur="setTimeout(hideSug, 200)">
+          <div id="city-sug" class="city-suggestions"></div>
+          <input type="hidden" id="n-lat" value="55.75">
+          <input type="hidden" id="n-lon" value="37.62">
+        </div>
+      </div>
+      <div id="n-err" class="err-msg">Пожалуйста, введите дату рождения</div>
+      <button class="calc-btn" onclick="calcNatal()">Построить карту</button>
+    </div>
+
+    <div class="result-sec" id="n-result">
+      <div class="sec-hdr">
+        <h2>Натальная Карта</h2>
+        <p id="n-subtitle">Астрологический портрет личности</p>
+      </div>
+      <div id="n-personal" class="personal-data"></div>
+      <div class="canvas-wrap">
+        <canvas id="natalCanvas" width="520" height="520"></canvas>
+      </div>
+      <div class="block-tabs" id="n-tabs"></div>
+      <div id="n-block-portrait"  class="block-content bvis"></div>
+      <div id="n-block-social"    class="block-content"></div>
+      <div id="n-block-love"      class="block-content"></div>
+      <div id="n-block-health"    class="block-content"></div>
+      <div id="n-block-karma"     class="block-content"></div>
+      <div id="n-block-forecast"  class="block-content"></div>
+      <div id="n-block-summary"   class="block-content"></div>
+    </div>
+  </div>
+
+  <div class="divider"><span>✦</span></div>
+</div>
+
+<footer>
+  <p>✦ Астрология и нумерология — зеркало, а не приговор ✦</p>
+  <p style="margin-top:6px;font-size:.75rem">Расшифровка носит информационный характер и предназначена для самопознания</p>
+</footer>
+
+<!-- Данные (арканы и зодиак) — подключаются первыми -->
+<script src="js/data.js"></script>
+
+<!-- Утилиты и UI-хелперы -->
+<script src="js/utils.js"></script>
+
+<!-- База городов и автокомплит -->
+<script src="js/cities.js"></script>
+
+<!-- Логика матрицы судьбы -->
+<script src="js/matrix.js"></script>
+
+<!-- Логика натальной карты -->
+<script src="js/natal.js"></script>
+
+<!-- Анимация звёздного неба — последней -->
+<script src="js/app.js"></script>
+
+</body>
+</html>
